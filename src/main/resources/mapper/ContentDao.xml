@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.myproject.dao.ContentDao">
+	<resultMap type="org.myproject.entity.CommandContent" id="CommandContentResult">
+		<id column="content_id" jdbcType="INTEGER" property="id" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="command_id" jdbcType="INTEGER" property="commandId" />
+	</resultMap>
+	<delete id="deleteOne" parameterType="int">
+		DELETE FROM command_content
+		WHERE id=#{_parameter}
+	</delete>
+	<delete id="deleteBatch" parameterType="java.util.List">
+		DELETE FROM command_content WHERE id IN (
+		<foreach collection="list" item="item" separator=",">
+			#{item}
+		</foreach>
+		)
+	</delete>
+	<delete id="deleteByCommandId" parameterType="int">
+		DELETE FROM
+		command_content WHERE command_id=#{_parameter}
+	</delete>
+	<delete id="deleteBatchByCommandId" parameterType="java.util.List">
+		DELETE FROM command_content WHERE command_id IN (
+		<foreach collection="list" item="item" separator=",">
+			#{item}
+		</foreach>
+		)
+	</delete>
+	<insert id="addOne" parameterType="org.myproject.entity.CommandContent">
+		INSERT INTO
+		command_content(content,command_id)
+		VALUES(#{content},#{commandId})
+	</insert>
+	<update id="update" parameterType="org.myproject.entity.CommandContent">
+		UPDATE command_content SET
+		content=#{content},command_id=#{commandId} WHERE
+		id=#{id}
+	</update>
+</mapper>

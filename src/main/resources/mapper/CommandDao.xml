@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace要指明dao文件，spring才能创建实现类对象 -->
+<mapper namespace="org.myproject.dao.CommandDao">
+	<resultMap type="org.myproject.entity.Command" id="CommandResult">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="description" jdbcType="VARCHAR" property="description" />
+		<collection property="contentList" resultMap="org.myproject.dao.ContentDao.CommandContentResult" />
+	</resultMap>
+	<select id="queryAll" resultMap="CommandResult">
+		SELECT a.id,name,description,b.id content_id,content,command_id FROM command AS a
+		LEFT JOIN command_content AS b on a.id = b.command_id
+		<where>
+			<if test="name!=null and !name.trim().equals(&quot;&quot;)">
+					AND name = #{name}
+			</if>
+			<if test="description!=null and !description.trim().equals(&quot;&quot;)">
+				AND description like "%"#{description}"%"
+			</if>
+		</where>
+		ORDER BY a.id,content_id
+	</select>
+	
+	<select id="queryByPage" resultMap="CommandResult">
+		SELECT id,name,description FROM command
+		<where>
+			<if test="name!=null and !name.trim().equals(&quot;&quot;)">
+					AND name = #{name}
+			</if>
+			<if test="description!=null and !description.trim().equals(&quot;&quot;)">
+				AND description like "%"#{description}"%"
+			</if>
+		</where>
+		ORDER BY id LIMIT #{offsetIndex},#{queryNumber}
+	</select>
+
+	<select id="commandCount" resultType="int">
+		SELECT count(*) FROM command
+		<where>
+			<if test="name!=null and !name.trim().equals(&quot;&quot;)">
+					AND name = #{name}
+			</if>
+			<if test="description!=null and !description.trim().equals(&quot;&quot;)">
+				AND description like "%"#{description}"%"
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryOne" parameterType="int" resultMap="CommandResult">
+		SELECT a.id,name,description,b.id content_id,content,command_id FROM command AS a LEFT JOIN
+		command_content AS b on a.id = b.command_id WHERE a.id=#{_parameter} ORDER BY a.id,content_id
+	</select>
+
+	<delete id="deleteOne" parameterType="int">
+		DELETE FROM command WHERE id=#{_parameter} 
+	</delete>
+	<delete id="deleteBatch" parameterType="java.util.List">
+		DELETE FROM command WHERE id IN (
+		<foreach collection="list" item="item" separator=",">
+			#{item}
+		</foreach>
+		)
+	</delete>
+
+	<insert id="addOne" parameterType="org.myproject.entity.Command"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO command(name,description) VALUES(#{name},#{description})
+	</insert>
+	<update id="update" parameterType="org.myproject.entity.Command">
+		UPDATE command SET name=#{name},description=#{description} WHERE id=#{id}
+	</update>
+
+</mapper>
