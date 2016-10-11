@@ -3,8 +3,7 @@
  */
 $(function(){
 	render();
-	var content = "客官，来啦，坐吧！<br/>回复[查看]收取更多精彩内容。";
-	content += "<br/>回复[帮助]可以查看所有可用的指令。";
+	var content = "快和我聊天吧，我无所不能。";
 	// 添加公众号的开场白
 	appendDialog("talk_recordbox","公众号",content);
 	render();
@@ -15,24 +14,71 @@ $(function(){
  * @param basePath
  */
 function send() {
-	var content = $("#content").val();
+	var content = {"key":"8f485e10536a4bcfaf29cc3749599dbf","info":$("#content").val()};
 	//content="" null undefine 0时判断为false
-	if(!content) {
+	if(!content.info) {
 		alert("请输入内容！");
 		return;
 	}
 	$.ajax({
-		url : $("#basePath").val() + "talk",
+		url : "http://www.tuling123.com/openapi/api",
 		type : "POST",
-		dataType : "text",
+		dataType : "json",
 		timeout : 10000,
 		success : function (data) {
-			appendDialog("talk_recordboxme","My账号",content);
-			appendDialog("talk_recordbox","公众号",data);
+			appendDialog("talk_recordboxme","My账号",content.info);
+			if (data.code == 100000) {
+				appendDialog("talk_recordbox","公众号",data.text);
+			}
+			if (data.code == 200000) {
+				appendDialog("talk_recordbox","公众号",data.text+"<br/>"+data.url);
+			}
+			if (data.code == 302000) {
+				var text=data.text+"<br/>";
+				var list = data.list;
+				if(list){
+					for(var i=0;i<list.length;i++){
+						var item = list[i];
+						if(item){
+							if (item.article) {
+								text += item.article+"<br/>";
+							}
+							if (item.source) {
+								text += item.source+"<br/>";
+							}
+							if (item.detailurl) {
+								text += "<a href='"+item.detailurl+">点击查看</a>"+"<br/>";
+							}
+						}
+					}
+				}
+				appendDialog("talk_recordbox","公众号",text);
+			}
+			if (data.code == 308000) {
+				var text=data.text+"<br/>";
+				var list = data.list;
+				if(list){
+					for(var i=0;i<list.length;i++){
+						var item = list[i];
+						if(item){
+							if (item.name) {
+								text += item.name+"<br/>";
+							}
+							if (item.source) {
+								text += item.info+"<br/>";
+							}
+							if (item.detailurl) {
+								text += "<a href='"+item.detailurl+">点击查看</a>"+"<br/>";
+							}
+						}
+					}
+				}
+				appendDialog("talk_recordbox","公众号",text);
+			}
 			$("#content").val("");
 			render();
 		},
-		data : {"content":content}
+		data : content
 	});
 }
 

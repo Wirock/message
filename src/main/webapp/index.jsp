@@ -7,7 +7,9 @@
 		<title>welcome</title>
 	</head>
 	<body>
-		<a href="<%=request.getContextPath() %>/init/talk">开始聊天</a>&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href="<%=request.getContextPath() %>/init/talk">自定义聊天</a>&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="<%=request.getContextPath() %>/list">命令列表</a>
+		<br/>
+		<a href="<%=request.getContextPath() %>/turing/talk">图灵机器人聊天</a>
 	</body>
 </html>

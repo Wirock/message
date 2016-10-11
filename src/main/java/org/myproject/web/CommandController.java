@@ -214,4 +214,12 @@ public class CommandController {
 	public String talk(@RequestParam("content")String content,Model model){
 		return queryService.queryByCommandName(content);
 	}
+	/**
+	 * 进入图灵机器人聊天界面
+	 * @return
+	 */
+	@RequestMapping("/turing/talk")
+	public String turingTalk(){
+		return "turing-talk";
+	}
 }
